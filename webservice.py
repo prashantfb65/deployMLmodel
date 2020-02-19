@@ -32,7 +32,7 @@ class FlowerForm(FlaskForm):
     pet_wid = TextField("Petal Width")
     submit = SubmitField("Analyze")
 
-@app.route("/", method=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def index():
     form = FlowerForm()
     if form.validate_on_submit():
@@ -45,9 +45,13 @@ def index():
 
 @app.route("/prediction")
 def prediction():
-    content = request.json
+    content = {}
+    content['sepal_length'] = float(session['sep_len'])
+    content['sepal_width'] = float(session['sep_wid'])
+    content['petal_length'] = float(session['pet_len'])
+    content['petal_width'] = float(session['pet_wid'])
     results = return_prediction(classification_model, classification_scaler, content)
-    return jsonify({'prediction' :results})
+    return render_template('prediction.html', results=results)
 
 if __name__=='__main__':
     app.run(port=9090)
